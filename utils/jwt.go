@@ -1,22 +1,20 @@
 package utils
 
 import (
-	"os"
-	"time"
+	"fmt"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
-var secretKey = []byte(os.Getenv("JWT_SECRET"))
+var secretKey = "123456789"
 
 func GenerateToken(username string) (string, error) {
-	token := jwt.New(jwt.SigningMethodES256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["username"] = username
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
-
-	tokenString, err := token.SignedString(secretKey)
-
+	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
+		username: username,
+	})
+	fmt.Println("secret key", secretKey)
+	tokenString, err := token.SignedString("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJiYXIiLCJuYmYiOjE0NDQ0Nzg0MDB9.u1riaD1rW97opCoAuRCTy4w58Br-Zk-bh7vLiRIsrpU")
+	fmt.Println("token ", tokenString)
 	if err != nil {
 		return "", nil
 	}

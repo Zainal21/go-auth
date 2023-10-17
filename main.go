@@ -36,16 +36,17 @@ func main() {
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"success":"true"}`))
+		w.Write([]byte(`{"success":"tsrue"}`))
 	})
 
-	r.HandleFunc("login", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		handler.AuthHandler(w, r, userRepository)
 	}).Methods("POST")
 
-	r.HandleFunc("register", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
 		handler.RegisterHandler(w, r, userRepository)
 	}).Methods("POST")
+
 	http.Handle("/", r)
 	// listen and serve
 	PORT := os.Getenv("PORT")

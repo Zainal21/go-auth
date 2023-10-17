@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"go-auth/entity"
+	"go-auth/utils"
 )
 
 type UserRepository struct {
@@ -28,8 +29,14 @@ func (r UserRepository) FindUserByUserName(username string) (*entity.User, error
 }
 
 func (r *UserRepository) CreateUser(user *entity.User) error {
+	hashPassword, err := utils.HashPassword(user.Password)
+
+	if err != nil {
+		return err
+	}
+
 	query := "INSERT INTO users (username, password) VALUES (?, ?)"
-	_, err := r.db.Exec(query, user.Username, user.Password)
+	_, err = r.db.Exec(query, user.Username, hashPassword)
 	if err != nil {
 		return err
 	}

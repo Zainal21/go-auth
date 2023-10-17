@@ -27,6 +27,11 @@ func AuthHandler(w http.ResponseWriter, r *http.Request, userRepository *reposit
 		return
 	}
 
+	if token == "" {
+		http.Error(w, "Token generation failed", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(`{"token":"` + token + `"}`))
 }
