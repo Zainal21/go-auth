@@ -14,7 +14,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request, userRepository *reposit
 	// fetch user from repository
 	user, err := userRepository.FindUserByUserName(username)
 
-	if err != nil || user.Password != password {
+	if err != nil || !userRepository.VerifyPassword(username, password) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
@@ -33,7 +33,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request, userRepository *reposit
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"token":"` + token + `"}`))
+	w.Write([]byte(`{"token":"` + token + `", "user" : "` + user.Username + `"}`))
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request, userRepository *repository.UserRepository) {

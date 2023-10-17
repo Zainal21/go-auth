@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"go-auth/entity"
 	"go-auth/utils"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepository struct {
@@ -41,4 +43,31 @@ func (r *UserRepository) CreateUser(user *entity.User) error {
 		return err
 	}
 	return nil
+}
+
+func (r *UserRepository) VerifyPassword(username, password string) bool {
+	storedHashedPassword, err := r.getHashedPassword(username)
+	if err != nil {
+		return false
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(storedHashedPassword), []byte(password))
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (r *UserRepository) getHashedPassword(username string) (string, error) {
+	query := "SELECT password FROM users WHERE username = ?"
+	row := r.db.QueryRow(query, username)
+
+	var storedHashedPassword string
+	err := row.Scan(&storedHashedPassword)
+	if err != nil {
+		return "", err
+	}
+
+	return storedHashedPassword, nil
 }
